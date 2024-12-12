@@ -4,10 +4,10 @@
  */
 exports.up = function(knex) {
 return knex.schema.alterTable("bank_accounts", (table) => {
-  table.string("account_name").notNullable(); // Account holder name
-  table.string("bank").notNullable(); // Bank name
-  table.decimal("amount", 15, 2).defaultTo(0.0); // Amount column with default value
-  table.boolean("is_permanent").notNullable().defaultTo(false); // Whether the account is permanent
+  table.string("account_name").notNullable(); 
+  table.string("bank").notNullable(); 
+  table.decimal("amount", 15, 2).defaultTo(0.0); 
+  table.boolean("is_permanent").notNullable().defaultTo(false); 
 });
 };
 

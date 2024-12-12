@@ -5,17 +5,17 @@
  */
 exports.up = function (knex) {
   return knex.schema.createTable("users", (table) => {
-    table.increments("user_id").primary(); // Auto-increment primary key
-    table.string("name", 100).notNullable(); // User's name
-    table.string("email", 255).notNullable().unique(); // User's email
-    table.string("password", 255).notNullable(); // Hashed password
-    table.string("phone", 30).notNullable().unique(); // Phone number
-    table.enu("gender", ["male", "female"]).defaultTo("male"); // Gender enum
-    table.text("verificationString"); // Verification string
-    table.boolean("isVerified").notNullable().defaultTo(false); // Verification status
-    table.timestamp("verified"); // Verified timestamp
-    table.text("passwordToken"); // Password reset token
-    table.timestamp("passwordExpirationDate"); // Token expiration timestamp
+    table.increments("user_id").primary(); 
+    table.string("name", 100).notNullable(); 
+    table.string("email", 255).notNullable().unique(); 
+    table.string("password", 255).notNullable(); 
+    table.string("phone", 30).notNullable().unique(); 
+    table.enu("gender", ["male", "female"]).defaultTo("male"); 
+    table.text("verificationString"); 
+    table.boolean("isVerified").notNullable().defaultTo(false); 
+    table.timestamp("verified"); 
+    table.text("passwordToken"); 
+    table.timestamp("passwordExpirationDate"); 
     table.timestamps(true, true);
   });
 };

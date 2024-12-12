@@ -4,8 +4,8 @@
  */
 exports.up = function(knex) {
 return knex.schema.table("transactions", (table) => {
-  table.string("recipient_bank").nullable(); // Bank of the recipient
-  table.string("recipient_account").nullable(); // Account of the recipient
+  table.string("recipient_bank").nullable(); 
+  table.string("recipient_account").nullable();
 });
 };
 

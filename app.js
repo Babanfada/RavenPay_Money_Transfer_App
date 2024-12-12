@@ -4,16 +4,8 @@ require("express-async-errors");
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 5004;
-// const connectDB = require("./models");
-// const path = require("path");
 const knexConfig = require("./knexfile");
 const Knex = require("knex");
-
-// security
-// const rateLimiter = require("express-rate-limit");
-// const helmet = require("helmet");
-// const xss = require("xss-clean");
-// const cors = require("cors");
 
 //middleware
 app.use(express.json());

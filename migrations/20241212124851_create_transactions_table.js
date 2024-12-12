@@ -18,12 +18,12 @@ exports.up = function (knex) {
       .notNullable()
       .references("act_id")
       .inTable("bank_accounts")
-      .onDelete("CASCADE"); // Foreign key to bank accounts
-    table.enu("type", ["deposit", "transfer"]).notNullable(); // Transaction type
-    table.decimal("amount", 15, 2).notNullable(); // Transaction amount
-    table.string("reference", 100).notNullable().unique(); // Unique transaction reference
-    table.enu("status", ["pending", "completed", "failed"]).notNullable(); // Status of the transaction
-    table.timestamps(true, true); // created_at and updated_at
+      .onDelete("CASCADE"); 
+    table.enu("type", ["deposit", "transfer"]).notNullable(); 
+    table.decimal("amount", 15, 2).notNullable(); 
+    table.string("reference", 100).notNullable().unique(); 
+    table.enu("status", ["pending", "completed", "failed"]).notNullable(); 
+    table.timestamps(true, true); 
   });
 };
 
