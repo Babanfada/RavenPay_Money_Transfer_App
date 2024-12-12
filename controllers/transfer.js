@@ -79,4 +79,61 @@ const sendMoneyToOtherBanks = async (req, res) => {
   }
 };
 
-module.exports = { sendMoneyToOtherBanks };
+const { findTransactionsByUserId } = require("../models/transactions");
+
+const getAllTransactions = async (req, res) => {
+  const userId = req.user.user_id;
+
+  try {
+    // Query transactions for the authenticated user
+    const transactions = await findTransactionsByUserId(userId);
+
+    if (!transactions.length) {
+      return res.status(404).json({ message: "No transactions found." });
+    }
+
+    res.status(200).json({
+      message: "Transactions retrieved successfully.",
+      transactions,
+    });
+  } catch (error) {
+    console.error("Error retrieving transactions:", error.message);
+    res.status(500).json({ message: "Failed to retrieve transactions." });
+  }
+};
+const getTransactionsByType = async (req, res) => {
+  const userId = req.user.user_id;
+  const { type } = req.params; // `deposit` or `transfer`
+
+  try {
+    // Validate the transaction type
+    if (!["deposit", "transfer"].includes(type)) {
+      return res.status(400).json({ message: "Invalid transaction type." });
+    }
+
+    // Query transactions of a specific type
+    const transactions = await findTransactionsByUserId(userId, type);
+
+    if (!transactions.length) {
+      return res.status(404).json({
+        message: `No ${type} transactions found.`,
+      });
+    }
+
+    res.status(200).json({
+      message: `${
+        type.charAt(0).toUpperCase() + type.slice(1)
+      } transactions retrieved successfully.`,
+      transactions,
+    });
+  } catch (error) {
+    console.error("Error retrieving transactions:", error.message);
+    res.status(500).json({ message: "Failed to retrieve transactions." });
+  }
+};
+
+module.exports = {
+  sendMoneyToOtherBanks,
+  getAllTransactions,
+  getTransactionsByType,
+};

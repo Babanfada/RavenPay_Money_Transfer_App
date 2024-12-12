@@ -33,21 +33,21 @@ const errorHandlerMiddleware = require("./middlewares/errorHandler");
 const cookieParser = require("cookie-parser");
 
 // Router
-// const employeesRoutes = require("./routes/employeesRouter");
 const authRoutes = require("./routes/authflow");
 const bank_accounts_Routes = require("./routes/bankAccounts");
 const webhook = require("./routes/webhook");
 const transact = require("./routes/transfer");
+const transactions = require("./routes/transactions");
 
 // use Cookie
 app.use(cookieParser(process.env.JWT_SECRET));
 
 // use Routes
-// app.use("/docs", express.static("./documentation"));
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/create_account", bank_accounts_Routes);
 app.use("/api/v1/webhooks", webhook);
 app.use("/api/v1/transfers", transact);
+app.use("/api/v1/transactions", transactions);
 
 //Error Handling Middleware for routes and interacting with the database
 app.use(notFound);
