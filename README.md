@@ -22,7 +22,7 @@ Access the published Postman documentation for this project [here](https://docum
 ## Endpoints
 
 ### Bank Account Management
-- `POST /generate-account`: Generate a bank account.
+- `POST /create_account`: Generate a bank account.
 - `POST /transfers`: Send money to other banks.
 - `GET /transactions`: Retrieve transaction history.
 - `GET /transactions/:type`: Retrieve specific transaction types (e.g., `deposit`, `transfer`).

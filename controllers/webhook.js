@@ -15,9 +15,7 @@ const handleWebhook = async (req, res) => {
 
     if (existingTransaction) {
       return res.status(409).json({ message: "Transaction already exists." });
-    }
-
-    
+    }    
     await createTransaction({
       user_id,
       account_id,

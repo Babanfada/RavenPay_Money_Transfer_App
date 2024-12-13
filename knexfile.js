@@ -12,7 +12,7 @@ module.exports = {
       host: "127.0.0.1",
       port: 3306,
       user: process.env.DB_USERNAME || "root",
-      password: process.env.DB_PASSWORD || "yourPassword",
+      password: process.env.DB_PASSWORD || "password",
       database: process.env.DB_DATABASE || "ravenpay",
     },
   },
