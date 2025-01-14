@@ -18,9 +18,9 @@ const generateBankAccount = async (req, res) => {
 
   // Generate a unique account number using Raven Atlas API
   const { first_name, last_name, phone, email } = req.body;
-  const ravenApiKey = process.env.RAVEN_ATLAS_API_KEY; 
+  const ravenApiKey = process.env.RAVEN_ATLAS_API_KEY;
   const ravenApiUrl =
-    "https://integrations.getravenbank.com/v1/pwbt/generate_account"; 
+    "https://integrations.getravenbank.com/v1/pwbt/generate_account";
 
   let newAccount;
   try {
@@ -45,7 +45,7 @@ const generateBankAccount = async (req, res) => {
 
     // Make the API request
     const response = await axios(config);
-    console.log(response.data, "here");
+    // console.log(response.data, "here");
     newAccount = {
       user_id: userId,
       account_number: response.data.data.account_number,
@@ -53,7 +53,7 @@ const generateBankAccount = async (req, res) => {
       bank: response.data.data.bank,
       amount: response.data.data.amount,
       is_permanent: response.data.is_permanent,
-      balance: 0.0, 
+      balance: 0.0,
     };
   } catch (error) {
     console.error("Error generating account number:", error.message);

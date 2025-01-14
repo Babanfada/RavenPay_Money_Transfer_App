@@ -1,29 +1,57 @@
 const db = require("../models/db");
 const { BAD_REQUEST } = require("../middlewares/customErrors");
-const { findTransaction, createTransaction } = require("../models/webhook");
-
+const { findNotification, createNotification } = require("../models/webhook");
 const handleWebhook = async (req, res) => {
   try {
-    const { user_id, account_id, type, amount, reference, status } = req.body;
+    const { event, data } = req.body;
 
-    // Validate required fields
-    if (!user_id || !account_id || !type || !amount || !reference || !status) {
-      throw new BAD_REQUEST("Missing required fields in webhook payload.");
+    if (!event || !data) {
+      throw new Error("Missing event or data in webhook payload.");
     }
 
-    const existingTransaction = await findTransaction(reference);
+    if (event === "transfer") {
+      const { reference } = data;
 
-    if (existingTransaction) {
-      return res.status(409).json({ message: "Transaction already exists." });
-    }    
-    await createTransaction({
-      user_id,
-      account_id,
-      type,
-      amount,
-      reference,
-      status,
-    });
+      // Validate required fields
+      const missingFields = [
+        "user_id",
+        "narration",
+        "amount",
+        "reference",
+        "status",
+        "recipient_bank",
+        "recipient_account",
+      ].filter((field) => !data[field]);
+
+      if (missingFields.length > 0) {
+        throw new BAD_REQUEST(
+          `Missing required fields in webhook payload: ${missingFields.join(
+            ", "
+          )}`
+        );
+      }
+
+      // Check for existing notification
+      const existingNotification = await findNotification(reference);
+      if (existingNotification) {
+        return res
+          .status(409)
+          .json({ message: "Notification already exists." });
+      }
+
+      // Create a new notification
+      await createNotification({
+        event,
+        ...data,
+      });
+    } else {
+      // Handle other event types (if needed)
+      await createNotification({
+        event,
+        ...data,
+      });
+    }
+
     // Respond with a success message
     res.status(201).json({ message: "Webhook processed successfully." });
   } catch (error) {

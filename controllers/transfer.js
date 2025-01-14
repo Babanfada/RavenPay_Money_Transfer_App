@@ -2,11 +2,12 @@ const axios = require("axios");
 const qs = require("qs");
 const db = require("../models/db");
 const { BAD_REQUEST } = require("../middlewares/customErrors");
-const { createTransaction } = require("../models/webhook");
+const {  triggerWebhook } = require("../models/webhook");
 const {
   findBankAccountByUserId,
   updateBankAccount,
 } = require("../models/bank_account");
+const { findTransactionsByUserId, createTransaction } = require("../models/transactions");
 
 const sendMoneyToOtherBanks = async (req, res) => {
   const userId = req.user.user_id;
@@ -19,21 +20,21 @@ const sendMoneyToOtherBanks = async (req, res) => {
 
   // Ensure the user has sufficient balance
   const userAccount = await findBankAccountByUserId({ user_id: userId });
-
   if (!userAccount || userAccount.balance < amount) {
     throw new BAD_REQUEST("Insufficient balance.");
   }
-  // Perform the transfer using Raven Atlas API
+
   const ravenApiKey = process.env.RAVEN_ATLAS_API_KEY;
   const ravenApiUrl =
     "https://integrations.getravenbank.com/v1/transfers/create";
+
   try {
     const data = qs.stringify({
-      amount,
-      bank_code: "044",
+      amount: amount,
       bank: recipient_bank,
       account_number: recipient_account,
-      account_name: "Pastor Bright",
+      account_name: userAccount.account_name,
+      bank_code: "044",
       narration: "Transfer",
       reference: "9967998",
       currency: "NGN",
@@ -48,14 +49,14 @@ const sendMoneyToOtherBanks = async (req, res) => {
       },
       data: data,
     };
-    console.log("heereeeee");
+
     const response = await axios(config);
-    console.log(response.data);
+
     // Log the transaction
     const newTransaction = {
       user_id: userId,
       account_id: userAccount.act_id,
-      type: response.data.data.narration,
+      narration: response.data.data.narration,
       amount: response.data.data.amount,
       reference: response.data.data.trx_ref,
       status: response.data.status || "pending",
@@ -68,6 +69,15 @@ const sendMoneyToOtherBanks = async (req, res) => {
     // Deduct the balance from the sender's account
     await updateBankAccount(userId, { balance: userAccount.balance - amount });
 
+    // Trigger webhook
+    await triggerWebhook({
+      event: "transfer",
+      data: {
+        transactionId,
+        ...newTransaction,
+      },
+    });
+
     // Respond with success
     res.status(201).json({
       message: "Transfer successful.",
@@ -75,11 +85,21 @@ const sendMoneyToOtherBanks = async (req, res) => {
     });
   } catch (error) {
     console.error("Transfer error:", error.message);
+    // Trigger webhook for failed transfer
+    await triggerWebhook({
+      event: "transfer_failed",
+      data: {
+        userId,
+        recipient_bank,
+        recipient_account,
+        amount,
+        error: error.message,
+      },
+    });
+
     throw new BAD_REQUEST("Transfer failed. Please try again.");
   }
 };
-
-const { findTransactionsByUserId } = require("../models/transactions");
 
 const getAllTransactions = async (req, res) => {
   const userId = req.user.user_id;
@@ -101,6 +121,7 @@ const getAllTransactions = async (req, res) => {
     res.status(500).json({ message: "Failed to retrieve transactions." });
   }
 };
+
 const getTransactionsByType = async (req, res) => {
   const userId = req.user.user_id;
   const { type } = req.params; // `deposit` or `transfer`

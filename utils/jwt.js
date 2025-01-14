@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const createUser = (user) => {
   return {
     user_id: user.user_id,
-    name: user.fullname,
+    name: user.name,
     email: user.email,
     phone: user.phone,
     gender: user.gender,

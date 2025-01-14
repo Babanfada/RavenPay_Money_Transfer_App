@@ -53,7 +53,7 @@ const verifyMail = async (req, res) => {
       "verification failed!!!, this email is not registered yet"
     );
   }
-  console.log("here");
+  // console.log("here");
   if (verificationString !== user.verificationString) {
     throw new BAD_REQUEST("verification failed!!!");
   }
